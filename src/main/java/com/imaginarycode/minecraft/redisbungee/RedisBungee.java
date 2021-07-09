@@ -419,7 +419,7 @@ public class RedisBungee {
         Toml toml = nyaConfiguration.getToml();
 
         final String redisServer = toml.getString("redis-server", "localhost");
-        final int redisPort = Integer.parseInt(toml.getString("redis-port", "6379"));
+        final int redisPort = Math.toIntExact(toml.getLong("redis-port", 6379L));
         String redisPassword = toml.getString("redis-password");
         String serverId = toml.getString("server-id");
 

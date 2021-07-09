@@ -47,7 +47,7 @@ public class NyaConfiguration {
                 // Just ignore since it either does not exist, or we can overwrite
             }
 
-            try (InputStream in = this.getClass().getResourceAsStream(name+".toml")) {
+            try (InputStream in = this.getClass().getResourceAsStream("/" + name + ".toml")) {
                 Files.copy(in, configFile.toPath());
             }
         } catch (Exception e) {
