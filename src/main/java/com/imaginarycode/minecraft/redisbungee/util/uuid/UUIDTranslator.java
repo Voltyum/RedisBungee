@@ -4,17 +4,16 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.imaginarycode.minecraft.redisbungee.RedisBungee;
+import com.velocitypowered.api.proxy.Player;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import net.md_5.bungee.api.ProxyServer;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.exceptions.JedisException;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
@@ -41,8 +40,9 @@ public final class UUIDTranslator {
     public final UUID getTranslatedUuid(@NonNull String player, boolean expensiveLookups) {
         // If the player is online, give them their UUID.
         // Remember, local data > remote data.
-        if (ProxyServer.getInstance().getPlayer(player) != null)
-            return ProxyServer.getInstance().getPlayer(player).getUniqueId();
+        Optional<Player> optionalPlayer = plugin.getProxyServer().getPlayer(player);
+        if (optionalPlayer.isPresent())
+            return optionalPlayer.get().getUniqueId();
 
         // Check if it exists in the map
         CachedUUIDEntry cachedUUIDEntry = nameToUuidMap.get(player.toLowerCase());
@@ -65,7 +65,7 @@ public final class UUIDTranslator {
 
         // If we are in offline mode, UUID generation is simple.
         // We don't even have to cache the UUID, since this is easy to recalculate.
-        if (!plugin.getProxy().getConfig().isOnlineMode()) {
+        if (!plugin.getProxyServer().getConfiguration().isOnlineMode()) {
             return UUID.nameUUIDFromBytes(("OfflinePlayer:" + player).getBytes(Charsets.UTF_8));
         }
 
@@ -89,14 +89,14 @@ public final class UUIDTranslator {
             }
 
             // That didn't work. Let's ask Mojang.
-            if (!expensiveLookups || !ProxyServer.getInstance().getConfig().isOnlineMode())
+            if (!expensiveLookups || !plugin.getProxyServer().getConfiguration().isOnlineMode())
                 return null;
 
             Map<String, UUID> uuidMap1;
             try {
                 uuidMap1 = new UUIDFetcher(Collections.singletonList(player)).call();
             } catch (Exception e) {
-                plugin.getLogger().log(Level.SEVERE, "Unable to fetch UUID from Mojang for " + player, e);
+                plugin.getLogger().warn("Unable to fetch UUID from Mojang for " + player, e);
                 return null;
             }
             for (Map.Entry<String, UUID> entry : uuidMap1.entrySet()) {
@@ -106,7 +106,7 @@ public final class UUIDTranslator {
                 }
             }
         } catch (JedisException e) {
-            plugin.getLogger().log(Level.SEVERE, "Unable to fetch UUID for " + player, e);
+            plugin.getLogger().warn("Unable to fetch UUID for " + player, e);
         }
 
         return null; // Nope, game over!
@@ -115,8 +115,9 @@ public final class UUIDTranslator {
     public final String getNameFromUuid(@NonNull UUID player, boolean expensiveLookups) {
         // If the player is online, give them their UUID.
         // Remember, local data > remote data.
-        if (ProxyServer.getInstance().getPlayer(player) != null)
-            return ProxyServer.getInstance().getPlayer(player).getName();
+        Optional<Player> optionalPlayer = plugin.getProxyServer().getPlayer(player);
+        if (optionalPlayer.isPresent())
+            return optionalPlayer.get().getUsername();
 
         // Check if it exists in the map
         CachedUUIDEntry cachedUUIDEntry = uuidToNameMap.get(player);
@@ -147,7 +148,7 @@ public final class UUIDTranslator {
                 }
             }
 
-            if (!expensiveLookups || !ProxyServer.getInstance().getConfig().isOnlineMode())
+            if (!expensiveLookups || !plugin.getProxyServer().getConfiguration().isOnlineMode())
                 return null;
 
             // That didn't work. Let's ask Mojang. This call may fail, because Mojang is insane.
@@ -156,7 +157,7 @@ public final class UUIDTranslator {
                 List<String> nameHist = NameFetcher.nameHistoryFromUuid(player);
                 name = Iterables.getLast(nameHist, null);
             } catch (Exception e) {
-                plugin.getLogger().log(Level.SEVERE, "Unable to fetch name from Mojang for " + player, e);
+                plugin.getLogger().info("Unable to fetch name from Mojang for " + player, e);
                 return null;
             }
 
@@ -167,7 +168,7 @@ public final class UUIDTranslator {
 
             return null;
         } catch (JedisException e) {
-            plugin.getLogger().log(Level.SEVERE, "Unable to fetch name for " + player, e);
+            plugin.getLogger().info("Unable to fetch name for " + player, e);
             return null;
         }
     }
