@@ -7,19 +7,12 @@
     <groupId>com.imaginarycode.minecraft</groupId>
     <artifactId>RedisBungee</artifactId>
     <version>1.0.0</version>
+    <packaging>jar</packaging>
 
-    <repositories>
-        <repository>
-            <id>velocity</id>
-            <url>https://nexus.velocitypowered.com/snapshots/</url>
-        </repository>
-    </repositories>
-
-    <ciManagement>
-        <system>jenkins</system>
-        <url>http://ci.md-5.net/job/RedisBungee/</url>
-    </ciManagement>
-
+    <properties>
+        <java.version>1.8</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <inceptionYear>2013</inceptionYear>
 
@@ -30,14 +23,14 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
-                    <source>8</source>
-                    <target>8</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>2.1</version>
+                <version>3.1.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -82,13 +75,26 @@
                 <version>2.9.1</version>
             </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
     </build>
+
+    <repositories>
+        <repository>
+            <id>velocity</id>
+            <url>https://nexus.velocitypowered.com/snapshots/</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
-            <version>2.9.0</version>
+            <version>3.6.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -100,7 +106,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.16.16</version>
+            <version>1.18.20</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -108,12 +114,6 @@
             <artifactId>okhttp</artifactId>
             <version>2.7.5</version>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.velocitypowered</groupId>
