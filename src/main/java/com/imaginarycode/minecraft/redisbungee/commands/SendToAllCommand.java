@@ -4,8 +4,8 @@ import com.google.common.base.Joiner;
 import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
-import net.kyori.text.TextComponent;
-import net.kyori.text.format.TextColor;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
@@ -17,8 +17,8 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  */
 public class SendToAllCommand implements Command {
 
-    private static final TextComponent NO_PERMISSION = TextComponent.of("You have no permissions to do that.").color(TextColor.RED);
-    private static final TextComponent NO_COMMAND_SPECIFIED = TextComponent.of("You must specify a command to be run.").color(TextColor.RED);
+    private static final TextComponent NO_PERMISSION = TextComponent.of("You have no permissions to do that.").color(NamedTextColor.RED);
+    private static final TextComponent NO_COMMAND_SPECIFIED = TextComponent.of("You must specify a command to be run.").color(NamedTextColor.RED);
 
     @Override
     public void execute(CommandSource commandSource, String @NonNull [] args) {
@@ -30,7 +30,7 @@ public class SendToAllCommand implements Command {
         if (args.length > 0) {
             String command = Joiner.on(" ").skipNulls().join(args);
             RedisBungee.getApi().sendProxyCommand(command);
-            commandSource.sendMessage(TextComponent.of("Sent the command /" + command + " to all proxies.").color(TextColor.GREEN));
+            commandSource.sendMessage(TextComponent.of("Sent the command /" + command + " to all proxies.").color(NamedTextColor.GREEN));
         } else {
             commandSource.sendMessage(NO_COMMAND_SPECIFIED);
         }

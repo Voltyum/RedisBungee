@@ -7,8 +7,8 @@ import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
 import lombok.RequiredArgsConstructor;
-import net.kyori.text.TextComponent;
-import net.kyori.text.format.TextColor;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Map;
@@ -25,7 +25,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class GlobalListCommand implements Command {
 
-    private static final TextComponent NO_PERMISSION = TextComponent.of("You have no permissions to do that.").color(TextColor.RED);
+    private static final TextComponent NO_PERMISSION = TextComponent.of("You have no permissions to do that.").color(NamedTextColor.RED);
 
     private final RedisBungee redisBungee;
 
@@ -37,7 +37,7 @@ public class GlobalListCommand implements Command {
         }
 
         int count = RedisBungee.getApi().getPlayerCount();
-        TextComponent playersOnline = TextComponent.of(playerPlural(count) + " currently online.").color(TextColor.YELLOW);
+        TextComponent playersOnline = TextComponent.of(playerPlural(count) + " currently online.").color(NamedTextColor.YELLOW);
 
         if (args.length > 0 && args[0].equals("showall")) {
             Multimap<String, UUID> serverToPlayers = RedisBungee.getApi().getServerToPlayers();
@@ -46,16 +46,16 @@ public class GlobalListCommand implements Command {
                 human.put(entry.getKey(), redisBungee.getUuidTranslator().getNameFromUuid(entry.getValue(), false));
             }
             for (String server : new TreeSet<>(serverToPlayers.keySet())) {
-                TextComponent serverName = TextComponent.of("[" + server + "] ").color(TextColor.GREEN);
-                TextComponent serverCount = TextComponent.of("(" + human.get(server).size() + "): ").color(TextColor.YELLOW);
-                TextComponent serverPlayers = TextComponent.of(Joiner.on(", ").join(human.get(server))).color(TextColor.WHITE);
+                TextComponent serverName = TextComponent.of("[" + server + "] ").color(NamedTextColor.GREEN);
+                TextComponent serverCount = TextComponent.of("(" + human.get(server).size() + "): ").color(NamedTextColor.YELLOW);
+                TextComponent serverPlayers = TextComponent.of(Joiner.on(", ").join(human.get(server))).color(NamedTextColor.WHITE);
 
                 commandSource.sendMessage(serverName.append(serverCount).append(serverPlayers));
             }
             commandSource.sendMessage(playersOnline);
         } else {
             commandSource.sendMessage(playersOnline);
-            commandSource.sendMessage(TextComponent.of("To see all players online, use /glist showall.").color(TextColor.YELLOW));
+            commandSource.sendMessage(TextComponent.of("To see all players online, use /glist showall.").color(NamedTextColor.YELLOW));
         }
 
     }

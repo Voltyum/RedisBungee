@@ -7,8 +7,8 @@ import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
 import lombok.RequiredArgsConstructor;
-import net.kyori.text.TextComponent;
-import net.kyori.text.format.TextColor;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Map;
@@ -26,7 +26,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ProxyListCommand implements Command {
 
-    private static final TextComponent NO_PERMISSION = TextComponent.of("You have no permissions to do that.").color(TextColor.RED);
+    private static final TextComponent NO_PERMISSION = TextComponent.of("You have no permissions to do that.").color(NamedTextColor.RED);
 
     private final RedisBungee redisBungee;
 
@@ -39,12 +39,12 @@ public class ProxyListCommand implements Command {
 
         String proxy = args.length >= 1 ? args[0] : RedisBungee.getApi().getServerId();
         if (!redisBungee.getServerIds().contains(proxy)) {
-            commandSource.sendMessage(TextComponent.of(proxy + " is not a valid proxy. See /serverids for valid proxies.").color(TextColor.RED));
+            commandSource.sendMessage(TextComponent.of(proxy + " is not a valid proxy. See /serverids for valid proxies.").color(NamedTextColor.RED));
             return;
         }
         Set<UUID> players = RedisBungee.getApi().getPlayersOnProxy(proxy);
 
-        TextComponent playersOnline = TextComponent.of(playerPlural(players.size()) + " currently on proxy " + proxy + ".").color(TextColor.YELLOW);
+        TextComponent playersOnline = TextComponent.of(playerPlural(players.size()) + " currently on proxy " + proxy + ".").color(NamedTextColor.YELLOW);
 
         if (args.length >= 2 && args[1].equals("showall")) {
             Multimap<String, UUID> serverToPlayers = RedisBungee.getApi().getServerToPlayers();
@@ -55,16 +55,16 @@ public class ProxyListCommand implements Command {
                 }
             }
             for (String server : new TreeSet<>(human.keySet())) {
-                TextComponent serverName = TextComponent.of("[" + server + "] ").color(TextColor.RED);
-                TextComponent serverCount = TextComponent.of("(" + human.get(server).size() + "): ").color(TextColor.YELLOW);
-                TextComponent serverPlayers = TextComponent.of(Joiner.on(", ").join(human.get(server))).color(TextColor.WHITE);
+                TextComponent serverName = TextComponent.of("[" + server + "] ").color(NamedTextColor.RED);
+                TextComponent serverCount = TextComponent.of("(" + human.get(server).size() + "): ").color(NamedTextColor.YELLOW);
+                TextComponent serverPlayers = TextComponent.of(Joiner.on(", ").join(human.get(server))).color(NamedTextColor.WHITE);
 
                 commandSource.sendMessage(serverName.append(serverCount).append(serverPlayers));
             }
             commandSource.sendMessage(playersOnline);
         } else {
             commandSource.sendMessage(playersOnline);
-            commandSource.sendMessage(TextComponent.of("To see all players online, use /plist " + proxy + " showall.").color(TextColor.YELLOW));
+            commandSource.sendMessage(TextComponent.of("To see all players online, use /plist " + proxy + " showall.").color(NamedTextColor.YELLOW));
         }
     }
 

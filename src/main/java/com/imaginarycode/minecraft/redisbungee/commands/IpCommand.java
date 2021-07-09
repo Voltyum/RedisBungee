@@ -5,8 +5,8 @@ import com.imaginarycode.minecraft.redisbungee.utils.NyaUtils;
 import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
 import lombok.AllArgsConstructor;
-import net.kyori.text.TextComponent;
-import net.kyori.text.format.TextColor;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.net.InetAddress;
@@ -22,10 +22,10 @@ import java.util.UUID;
 @AllArgsConstructor
 public class IpCommand implements Command {
 
-    private static final TextComponent NO_PERMISSION = TextComponent.of("You have no permissions to do that.").color(TextColor.RED);
+    private static final TextComponent NO_PERMISSION = TextComponent.of("You have no permissions to do that.").color(NamedTextColor.RED);
 
-    private static final TextComponent NO_PLAYER_SPECIFIED = TextComponent.of("You must specify a player name.").color(TextColor.RED);
-    private static final TextComponent PLAYER_NOT_FOUND = TextComponent.of("No such player found.").color(TextColor.RED);
+    private static final TextComponent NO_PLAYER_SPECIFIED = TextComponent.of("You must specify a player name.").color(NamedTextColor.RED);
+    private static final TextComponent PLAYER_NOT_FOUND = TextComponent.of("No such player found.").color(NamedTextColor.RED);
 
     private final RedisBungee redisBungee;
 
@@ -45,7 +45,7 @@ public class IpCommand implements Command {
                 }
                 InetAddress ia = RedisBungee.getApi().getPlayerIp(uuid);
                 if (ia != null) {
-                    commandSource.sendMessage(TextComponent.of(args[0] + " is connected from "+ia.toString()+".").color(TextColor.GREEN));
+                    commandSource.sendMessage(TextComponent.of(args[0] + " is connected from "+ia.toString()+".").color(NamedTextColor.GREEN));
                 } else {
                     commandSource.sendMessage(PLAYER_NOT_FOUND);
                 }

@@ -3,8 +3,8 @@ package com.imaginarycode.minecraft.redisbungee.commands;
 import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
-import net.kyori.text.TextComponent;
-import net.kyori.text.format.TextColor;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
@@ -16,7 +16,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  */
 public class ProxyCommand implements Command {
 
-    private static final TextComponent NO_PERMISSION = TextComponent.of("You have no permissions to do that.").color(TextColor.RED);
+    private static final TextComponent NO_PERMISSION = TextComponent.of("You have no permissions to do that.").color(NamedTextColor.RED);
 
     @Override
     public void execute(CommandSource commandSource, String @NonNull [] strings) {
@@ -25,6 +25,6 @@ public class ProxyCommand implements Command {
             return;
         }
 
-        commandSource.sendMessage(TextComponent.of("You are currently at "+ RedisBungee.getApi().getServerId() +".").color(TextColor.GREEN));
+        commandSource.sendMessage(TextComponent.of("You are currently at "+ RedisBungee.getApi().getServerId() +".").color(NamedTextColor.GREEN));
     }
 }

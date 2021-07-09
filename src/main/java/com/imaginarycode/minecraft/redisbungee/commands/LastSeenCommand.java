@@ -5,8 +5,8 @@ import com.imaginarycode.minecraft.redisbungee.utils.NyaUtils;
 import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
 import lombok.AllArgsConstructor;
-import net.kyori.text.TextComponent;
-import net.kyori.text.format.TextColor;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.text.SimpleDateFormat;
@@ -22,10 +22,10 @@ import java.util.UUID;
 @AllArgsConstructor
 public class LastSeenCommand implements Command {
 
-    private static final TextComponent NO_PERMISSION = TextComponent.of("You have no permissions to do that.").color(TextColor.RED);
+    private static final TextComponent NO_PERMISSION = TextComponent.of("You have no permissions to do that.").color(NamedTextColor.RED);
 
-    private static final TextComponent NO_PLAYER_SPECIFIED = TextComponent.of("You must specify a player name.").color(TextColor.RED);
-    private static final TextComponent PLAYER_NOT_FOUND = TextComponent.of("No such player found.").color(TextColor.RED);
+    private static final TextComponent NO_PLAYER_SPECIFIED = TextComponent.of("You must specify a player name.").color(NamedTextColor.RED);
+    private static final TextComponent PLAYER_NOT_FOUND = TextComponent.of("No such player found.").color(NamedTextColor.RED);
 
     private final RedisBungee redisBungee;
 
@@ -46,11 +46,11 @@ public class LastSeenCommand implements Command {
                 long secs = RedisBungee.getApi().getLastOnline(uuid);
                 TextComponent message;
                 if (secs == 0) {
-                    message = TextComponent.of(args[0] + " is currently online.").color(TextColor.GREEN);
+                    message = TextComponent.of(args[0] + " is currently online.").color(NamedTextColor.GREEN);
                 } else if (secs != -1) {
-                    message = TextComponent.of(args[0] + " was last online on "+new SimpleDateFormat().format(secs)+".").color(TextColor.GREEN);
+                    message = TextComponent.of(args[0] + " was last online on "+new SimpleDateFormat().format(secs)+".").color(NamedTextColor.GREEN);
                 } else {
-                    message = TextComponent.of(args[0] + " has never been online.").color(TextColor.GREEN);
+                    message = TextComponent.of(args[0] + " has never been online.").color(NamedTextColor.GREEN);
                 }
                 commandSource.sendMessage(message);
             } else {
