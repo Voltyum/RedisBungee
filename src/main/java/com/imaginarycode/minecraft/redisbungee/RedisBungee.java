@@ -52,11 +52,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static com.google.common.base.Preconditions.checkArgument;
 
 /**
- * This code has been created by
- * gatogamer#6666 A.K.A. gatogamer.
- * If you want to use my code, please
- * don't remove this messages and
- * give me the credits. Arigato! n.n
+ * This code has been created by Tux, and modified by gatogamer.
  */
 @Plugin(id = "redisbungee", name = "RedisBungee", version = "1.0-SNAPSHOT", description = "Connecting multiple proxies using Redis", authors = {"Tux", "gatogamer_"})
 @Getter
@@ -92,6 +88,9 @@ public class RedisBungee {
     private boolean usingLua;
     private LuaManager.Script serverToPlayersScript;
     private LuaManager.Script getPlayerCountScript;
+
+    @Inject
+    private ConnectionListener connectionListener;
 
     private static final Object SERVER_TO_PLAYERS_KEY = new Object();
     private final Cache<Object, Multimap<String, UUID>> serverToPlayersCache = CacheBuilder.newBuilder()
@@ -176,7 +175,7 @@ public class RedisBungee {
             proxyServer.getCommandManager().register("serverids", new ServerIdsCommand(), "rserverids");
 
             api = new RedisBungeeAPI(this);
-            proxyServer.getEventManager().register(this, new ConnectionListener());
+            proxyServer.getEventManager().register(this, connectionListener);
             proxyServer.getEventManager().register(this, dataManager);
             pubSubListener = new PubSubListener();
             NyaUtils.run(pubSubListener);
@@ -420,11 +419,11 @@ public class RedisBungee {
 
         final String redisServer = toml.getString("redis-server", "localhost");
         final int redisPort = Math.toIntExact(toml.getLong("redis-port", 6379L));
-        String redisPassword = toml.getString("redis-password");
+        String redisPassword = toml.getString("redis-password", "");
         String serverId = toml.getString("server-id");
 
         if (redisPassword != null && (redisPassword.isEmpty() || redisPassword.equals("none"))) {
-            redisPassword = null;
+            redisPassword = "";
         }
 
         // Configuration sanity checks.
