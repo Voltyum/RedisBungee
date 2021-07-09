@@ -20,6 +20,7 @@ public class NyaConfiguration {
     private ProxyServer proxyServer;
     private Logger logger;
 
+    private String name;
 
     private Toml toml;
     private File dataFolder;
@@ -29,6 +30,7 @@ public class NyaConfiguration {
         this.proxyServer = proxyServer;
         this.logger = logger;
 
+        this.name = name;
         this.dataFolder = dataFolder;
         this.configFile = new File(this.dataFolder, name + ".toml");
 
@@ -45,7 +47,7 @@ public class NyaConfiguration {
                 // Just ignore since it either does not exist, or we can overwrite
             }
 
-            try (InputStream in = this.getClass().getResourceAsStream("/config.toml")) {
+            try (InputStream in = this.getClass().getResourceAsStream(name+".toml")) {
                 Files.copy(in, configFile.toPath());
             }
         } catch (Exception e) {
