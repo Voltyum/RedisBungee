@@ -168,12 +168,13 @@ public class RedisBungee {
                 proxyServer.getCommandManager().register("find", new FindCommand(this), "rfind");
                 proxyServer.getCommandManager().register("glist", new GlobalListCommand(this), "globallist");
                 proxyServer.getCommandManager().register("ip", new IpCommand(this), "playerip", "rip", "rplayerip");
-                proxyServer.getCommandManager().register("lastseen", new LastSeenCommand(this), "rlastseen");
-                proxyServer.getCommandManager().register("serverid", new ProxyCommand(), "rserverid", "proxy");
-                proxyServer.getCommandManager().register("plist", new ProxyListCommand(this), "rplist", "proxylist");
-                proxyServer.getCommandManager().register("sendtoall", new SendToAllCommand(), "rsendtoall");
-                proxyServer.getCommandManager().register("serverids", new ServerIdsCommand(), "rserverids");
             }
+            proxyServer.getCommandManager().register("lastseen", new LastSeenCommand(this), "rlastseen");
+            proxyServer.getCommandManager().register("serverid", new ProxyCommand(), "rserverid", "proxy");
+            proxyServer.getCommandManager().register("plist", new ProxyListCommand(this), "rplist", "proxylist");
+            proxyServer.getCommandManager().register("sendtoall", new SendToAllCommand(), "rsendtoall");
+            proxyServer.getCommandManager().register("serverids", new ServerIdsCommand(), "rserverids");
+            
             api = new RedisBungeeAPI(this);
             proxyServer.getEventManager().register(this, new ConnectionListener());
             proxyServer.getEventManager().register(this, dataManager);
