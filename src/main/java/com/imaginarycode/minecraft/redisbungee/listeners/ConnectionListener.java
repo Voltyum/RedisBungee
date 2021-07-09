@@ -23,7 +23,6 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 
 import javax.inject.Inject;
-import java.awt.*;
 import java.util.Optional;
 
 /**
