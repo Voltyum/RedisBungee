@@ -2,16 +2,13 @@ package com.imaginarycode.minecraft.redisbungee.commands;
 
 import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 import com.imaginarycode.minecraft.redisbungee.utils.NyaUtils;
-import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
-import com.velocitypowered.api.command.InvocableCommand;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import lombok.AllArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.UUID;
 
@@ -32,8 +29,10 @@ public class FindCommand implements SimpleCommand {
     private final RedisBungee redisBungee;
 
     @Override
-    public void execute(final InvocableCommand invocableCommand) {
-        CommandSource commandSource =
+    public void execute(final Invocation invocation) {
+        CommandSource commandSource = invocation.source();
+        String[] args = invocation.arguments();
+
         if (!commandSource.hasPermission("redisbungee.command.find")) {
             commandSource.sendMessage(NO_PERMISSION);
             return;
@@ -47,7 +46,7 @@ public class FindCommand implements SimpleCommand {
                 }
                 RegisteredServer registeredServer = RedisBungee.getApi().getServerFor(uuid);
                 if (registeredServer != null) {
-                    TextComponent message = TextComponent.of(args[0] + " is at " + registeredServer.getServerInfo().getName() + ".").color(NamedTextColor.GREEN);
+                    TextComponent message = Component.text(args[0] + " is at " + registeredServer.getServerInfo().getName() + ".").color(NamedTextColor.GREEN);
                     commandSource.sendMessage(message);
                 } else {
                     commandSource.sendMessage(PLAYER_NOT_FOUND);

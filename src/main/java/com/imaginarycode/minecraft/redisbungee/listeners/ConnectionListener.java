@@ -16,8 +16,9 @@ import com.velocitypowered.api.event.proxy.ProxyPingEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
-import net.kyori.text.TextComponent;
-import net.kyori.text.format.TextColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.slf4j.Logger;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
@@ -43,8 +44,8 @@ public class ConnectionListener {
     @Inject
     private RedisBungee redisBungee;
 
-    private static final TextComponent ONLINE_MODE_RECONNECT = TextComponent.of("Whoops! You need to reconnect.").color(TextColor.RED).append(TextComponent.of("\n\nWe found someone online using your username. They were kicked and you may reconnect.\nIf this does not work, please contact staff.").color(TextColor.GRAY));
-    private static final TextComponent ALREADY_LOGGED_IN = TextComponent.of("You are already logged on to this server.").color(TextColor.RED).append(TextComponent.of("\n\nIt may help to try logging in again in a few minutes.\nIf this does not resolve your issue, please contact staff.").color(TextColor.GRAY));
+    private static final TextComponent ALREADY_LOGGED_IN = Component.text("You are already logged on to this server.").color(NamedTextColor.RED).append(Component.text("\n\nIt may help to try logging in again in a few minutes.\nIf this does not resolve your issue, please contact staff.").color(NamedTextColor.GRAY));
+    private static final TextComponent ONLINE_MODE_RECONNECT = Component.text("Whoops! You need to reconnect.").color(NamedTextColor.RED).append(Component.text("\n\nWe found someone online using your username. They were kicked and you may reconnect.\nIf this does not work, please contact staff.").color(NamedTextColor.GRAY));
 
     @Subscribe
     public void on(LoginEvent event) {

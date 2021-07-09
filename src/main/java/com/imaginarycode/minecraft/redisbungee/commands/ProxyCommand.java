@@ -1,11 +1,11 @@
 package com.imaginarycode.minecraft.redisbungee.commands;
 
 import com.imaginarycode.minecraft.redisbungee.RedisBungee;
-import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
+import com.velocitypowered.api.command.SimpleCommand;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * This code has been created by
@@ -14,17 +14,20 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  * don't remove this messages and
  * give me the credits. Arigato! n.n
  */
-public class ProxyCommand implements Command {
+public class ProxyCommand implements SimpleCommand {
 
-    private static final TextComponent NO_PERMISSION = TextComponent.of("You have no permissions to do that.").color(NamedTextColor.RED);
+    private static final TextComponent NO_PERMISSION = Component.text("You have no permissions to do that.").color(NamedTextColor.RED);
 
     @Override
-    public void execute(CommandSource commandSource, String @NonNull [] strings) {
+    public void execute(final SimpleCommand.Invocation invocation) {
+        CommandSource commandSource = invocation.source();
+        String[] args = invocation.arguments();
+
         if (!commandSource.hasPermission("redisbungee.command.proxyid")) {
             commandSource.sendMessage(NO_PERMISSION);
             return;
         }
 
-        commandSource.sendMessage(TextComponent.of("You are currently at "+ RedisBungee.getApi().getServerId() +".").color(NamedTextColor.GREEN));
+        commandSource.sendMessage(Component.text("You are currently at "+ RedisBungee.getApi().getServerId() +".").color(NamedTextColor.GREEN));
     }
 }

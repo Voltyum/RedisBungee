@@ -2,12 +2,12 @@ package com.imaginarycode.minecraft.redisbungee.commands;
 
 import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 import com.imaginarycode.minecraft.redisbungee.utils.NyaUtils;
-import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
+import com.velocitypowered.api.command.SimpleCommand;
 import lombok.AllArgsConstructor;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.net.InetAddress;
 import java.util.UUID;
@@ -20,17 +20,19 @@ import java.util.UUID;
  * give me the credits. Arigato! n.n
  */
 @AllArgsConstructor
-public class IpCommand implements Command {
+public class IpCommand implements SimpleCommand {
 
-    private static final TextComponent NO_PERMISSION = TextComponent.of("You have no permissions to do that.").color(NamedTextColor.RED);
+    private static final TextComponent NO_PERMISSION = Component.text("You have no permissions to do that.").color(NamedTextColor.RED);
 
-    private static final TextComponent NO_PLAYER_SPECIFIED = TextComponent.of("You must specify a player name.").color(NamedTextColor.RED);
-    private static final TextComponent PLAYER_NOT_FOUND = TextComponent.of("No such player found.").color(NamedTextColor.RED);
+    private static final TextComponent NO_PLAYER_SPECIFIED = Component.text("You must specify a player name.").color(NamedTextColor.RED);
+    private static final TextComponent PLAYER_NOT_FOUND = Component.text("No such player found.").color(NamedTextColor.RED);
 
     private final RedisBungee redisBungee;
-
     @Override
-    public void execute(CommandSource commandSource, String @NonNull [] args) {
+    public void execute(final SimpleCommand.Invocation invocation) {
+        CommandSource commandSource = invocation.source();
+        String[] args = invocation.arguments();
+
         if (!commandSource.hasPermission("redisbungee.command.ip")) {
             commandSource.sendMessage(NO_PERMISSION);
             return;
@@ -45,7 +47,7 @@ public class IpCommand implements Command {
                 }
                 InetAddress ia = RedisBungee.getApi().getPlayerIp(uuid);
                 if (ia != null) {
-                    commandSource.sendMessage(TextComponent.of(args[0] + " is connected from "+ia.toString()+".").color(NamedTextColor.GREEN));
+                    commandSource.sendMessage(Component.text(args[0] + " is connected from "+ia.toString()+".").color(NamedTextColor.GREEN));
                 } else {
                     commandSource.sendMessage(PLAYER_NOT_FOUND);
                 }
