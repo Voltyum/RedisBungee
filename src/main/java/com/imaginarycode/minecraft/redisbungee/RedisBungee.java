@@ -58,7 +58,7 @@ import static com.google.common.base.Preconditions.checkArgument;
  * don't remove this messages and
  * give me the credits. Arigato! n.n
  */
-@Plugin(id = "RedisBungee", name = "RedisBungee", version = "1.0-SNAPSHOT", description = "Connecting multiple proxies using Redis", authors = {"Tux", "gatogamer_"})
+@Plugin(id = "redisbungee", name = "RedisBungee", version = "1.0-SNAPSHOT", description = "Connecting multiple proxies using Redis", authors = {"Tux", "gatogamer_"})
 @Getter
 public class RedisBungee {
 
@@ -174,7 +174,7 @@ public class RedisBungee {
             proxyServer.getCommandManager().register("plist", new ProxyListCommand(this), "rplist", "proxylist");
             proxyServer.getCommandManager().register("sendtoall", new SendToAllCommand(), "rsendtoall");
             proxyServer.getCommandManager().register("serverids", new ServerIdsCommand(), "rserverids");
-            
+
             api = new RedisBungeeAPI(this);
             proxyServer.getEventManager().register(this, new ConnectionListener());
             proxyServer.getEventManager().register(this, dataManager);
