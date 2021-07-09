@@ -437,7 +437,7 @@ public class RedisBungee {
             FutureTask<JedisPool> task = new FutureTask<>(() -> {
                 // Create the pool...
                 JedisPoolConfig config = new JedisPoolConfig();
-                config.setMaxTotal(Integer.parseInt(toml.getString("max-redis-connections", "8")));
+                config.setMaxTotal(Math.toIntExact(toml.getLong("max-redis-connections", 8L)));
                 return new JedisPool(config, redisServer, redisPort, 0, finalRedisPassword);
             });
 
