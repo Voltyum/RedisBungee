@@ -2,8 +2,8 @@ package com.imaginarycode.minecraft.redisbungee;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.net.InetAddresses;
+import com.moandjiezana.toml.Toml;
 import lombok.Getter;
-import net.md_5.bungee.config.Configuration;
 import redis.clients.jedis.JedisPool;
 
 import java.net.InetAddress;
@@ -19,12 +19,12 @@ public class RedisBungeeConfiguration {
     @Getter
     private final List<InetAddress> exemptAddresses;
 
-    public RedisBungeeConfiguration(JedisPool pool, Configuration configuration) {
+    public RedisBungeeConfiguration(JedisPool pool, Toml configuration) {
         this.pool = pool;
         this.serverId = configuration.getString("server-id");
-        this.registerBungeeCommands = configuration.getBoolean("register-bungee-commands", true);
+        this.registerBungeeCommands = configuration.getBoolean("register-velocity-commands", true);
 
-        List<String> stringified = configuration.getStringList("exempt-ip-addresses");
+        List<String> stringified = configuration.getList("exempt-ip-addresses");
         ImmutableList.Builder<InetAddress> addressBuilder = ImmutableList.builder();
 
         for (String s : stringified) {

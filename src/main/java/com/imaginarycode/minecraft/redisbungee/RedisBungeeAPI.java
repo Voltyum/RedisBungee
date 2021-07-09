@@ -4,8 +4,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
+import com.velocitypowered.api.proxy.server.RegisteredServer;
+import com.velocitypowered.api.proxy.server.ServerInfo;
 import lombok.NonNull;
-import net.md_5.bungee.api.config.ServerInfo;
 
 import java.net.InetAddress;
 import java.util.*;
@@ -54,11 +55,11 @@ public class RedisBungeeAPI {
      * as well, and will return local information on them.
      *
      * @param player a player name
-     * @return a {@link net.md_5.bungee.api.config.ServerInfo} for the server the player is on.
+     * @return a {@link ServerInfo} for the server the player is on.
      */
-    public final ServerInfo getServerFor(@NonNull UUID player) {
+    public final RegisteredServer getServerFor(@NonNull UUID player) {
         String server = plugin.getDataManager().getServer(player);
-        return plugin.getProxy().getServerInfo(server);
+        return plugin.getProxyServer().getServer(server).orElse(null);
     }
 
     /**

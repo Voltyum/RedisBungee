@@ -1,10 +1,9 @@
 package com.imaginarycode.minecraft.redisbungee;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.velocitypowered.api.proxy.Player;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.md_5.bungee.api.connection.PendingConnection;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 
@@ -15,16 +14,17 @@ import java.util.UUID;
 @VisibleForTesting
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RedisUtil {
-    protected static void createPlayer(ProxiedPlayer player, Pipeline pipeline, boolean fireEvent) {
-        createPlayer(player.getPendingConnection(), pipeline, fireEvent);
-        if (player.getServer() != null)
-            pipeline.hset("player:" + player.getUniqueId().toString(), "server", player.getServer().getInfo().getName());
+    public static void createPlayer(Player player, Pipeline pipeline, boolean fireEvent) {
+        createPlayer2(player, pipeline, fireEvent);
+        player.getCurrentServer().ifPresent(
+                serverConnection -> pipeline.hset("player:" + player.getUniqueId().toString(), "server", serverConnection.getServerInfo().getName())
+        );
     }
 
-    protected static void createPlayer(PendingConnection connection, Pipeline pipeline, boolean fireEvent) {
+    protected static void createPlayer2(Player connection, Pipeline pipeline, boolean fireEvent) {
         Map<String, String> playerData = new HashMap<>(4);
         playerData.put("online", "0");
-        playerData.put("ip", connection.getAddress().getAddress().getHostAddress());
+        playerData.put("ip", connection.getRemoteAddress().getAddress().getHostAddress());
         playerData.put("proxy", RedisBungee.getConfiguration().getServerId());
 
         pipeline.sadd("proxy:" + RedisBungee.getApi().getServerId() + ":usersOnline", connection.getUniqueId().toString());
@@ -33,7 +33,7 @@ public class RedisUtil {
         if (fireEvent) {
             pipeline.publish("redisbungee-data", RedisBungee.getGson().toJson(new DataManager.DataManagerMessage<>(
                     connection.getUniqueId(), DataManager.DataManagerMessage.Action.JOIN,
-                    new DataManager.LoginPayload(connection.getAddress().getAddress()))));
+                    new DataManager.LoginPayload(connection.getRemoteAddress().getAddress()))));
         }
     }
 
