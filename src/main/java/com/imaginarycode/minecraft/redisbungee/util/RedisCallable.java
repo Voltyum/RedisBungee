@@ -6,7 +6,6 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import java.util.concurrent.Callable;
-import java.util.logging.Level;
 
 @AllArgsConstructor
 public abstract class RedisCallable<T> implements Callable<T>, Runnable {

@@ -7,7 +7,6 @@ import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
 import lombok.RequiredArgsConstructor;
-import net.kyori.text.ComponentBuilder;
 import net.kyori.text.TextComponent;
 import net.kyori.text.format.TextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;

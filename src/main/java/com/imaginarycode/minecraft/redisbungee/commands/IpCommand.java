@@ -10,7 +10,6 @@ import net.kyori.text.format.TextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.net.InetAddress;
-import java.text.SimpleDateFormat;
 import java.util.UUID;
 
 /**

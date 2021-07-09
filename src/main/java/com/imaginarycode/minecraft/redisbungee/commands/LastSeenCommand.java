@@ -4,7 +4,6 @@ import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 import com.imaginarycode.minecraft.redisbungee.utils.NyaUtils;
 import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
-import com.velocitypowered.api.proxy.server.RegisteredServer;
 import lombok.AllArgsConstructor;
 import net.kyori.text.TextComponent;
 import net.kyori.text.format.TextColor;
