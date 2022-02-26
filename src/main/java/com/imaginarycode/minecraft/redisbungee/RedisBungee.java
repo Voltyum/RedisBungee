@@ -31,6 +31,7 @@ import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.messages.LegacyChannelIdentifier;
+import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.scheduler.ScheduledTask;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -240,10 +241,9 @@ public class RedisBungee {
 
             }, 0, 1, TimeUnit.MINUTES);
         }
-        proxyServer.getChannelRegistrar().register(
-                new LegacyChannelIdentifier("legacy:redisbungee"),
-                new LegacyChannelIdentifier("RedisBungee")
-        );
+
+        proxyServer.getChannelRegistrar().register(MinecraftChannelIdentifier.from("redisbungee:toproxy"));
+        proxyServer.getChannelRegistrar().register(MinecraftChannelIdentifier.create("redisbungee", "tospigot"));
     }
 
     @Subscribe
@@ -264,7 +264,7 @@ public class RedisBungee {
                 }
             }
 
-            pool.destroy();
+            pool.close();
         }
     }
 
@@ -345,7 +345,7 @@ public class RedisBungee {
         return serverIds;
     }
 
-    final Set<UUID> getPlayers() {
+    public final Set<UUID> getPlayers() {
         ImmutableSet.Builder<UUID> setBuilder = ImmutableSet.builder();
         if (pool != null) {
             try (Jedis rsc = pool.getResource()) {

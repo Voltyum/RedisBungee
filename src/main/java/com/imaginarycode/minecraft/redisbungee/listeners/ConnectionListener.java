@@ -1,5 +1,12 @@
 package com.imaginarycode.minecraft.redisbungee.listeners;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multiset;
+import com.google.common.io.ByteArrayDataInput;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import com.imaginarycode.minecraft.redisbungee.DataManager;
 import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 import com.imaginarycode.minecraft.redisbungee.RedisUtil;
@@ -10,11 +17,14 @@ import com.velocitypowered.api.event.ResultedEvent;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.LoginEvent;
+import com.velocitypowered.api.event.connection.PluginMessageEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.proxy.ProxyPingEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.proxy.ServerConnection;
+import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -24,10 +34,10 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 
 import javax.inject.Inject;
-import java.util.Optional;
+import java.util.*;
 
 /**
- * This code has been created by Tux, and modified by gatogamer.
+ * This code has been created by Tux, and modified by gatogamer and YoSoyVillaa.
  */
 public class ConnectionListener {
 
@@ -135,4 +145,138 @@ public class ConnectionListener {
         }
     }
 
+    @Subscribe
+    public void on(PluginMessageEvent event) {
+        if (event.getIdentifier().getId().equals("redisbungee:toproxy") && event.getSource() instanceof ServerConnection) {
+            event.setResult(PluginMessageEvent.ForwardResult.handled());
+            final byte[] data = Arrays.copyOf(event.getData(), event.getData().length);
+            redisBungee.getProxyServer().getScheduler().buildTask(redisBungee, () -> {
+                ByteArrayDataInput in = ByteStreams.newDataInput(data);
+                String subChannel = in.readUTF();
+
+                ByteArrayDataOutput out = ByteStreams.newDataOutput();
+                String type;
+
+                switch (subChannel) {
+                    case "PlayerList":
+                        out.writeUTF("PlayerList");
+                        Set<UUID> original = Collections.emptySet();
+                        type = in.readUTF();
+                        if (type.equals("ALL")) {
+                            out.writeUTF("ALL");
+                            original = redisBungee.getPlayers();
+                        } else {
+                            try {
+                                original = RedisBungee.getApi().getPlayersOnServer(type);
+                            } catch (IllegalArgumentException ignored) {
+                            }
+                        }
+                        Set<String> players = new HashSet<>();
+                        for (UUID uuid : original)
+                            players.add(redisBungee.getUuidTranslator().getNameFromUuid(uuid, false));
+                        out.writeUTF(Joiner.on(',').join(players));
+                        break;
+                    case "PlayerCount":
+                        out.writeUTF("PlayerCount");
+
+                        type = in.readUTF();
+                        if (type.equals("ALL")) {
+                            out.writeUTF("ALL");
+
+                            out.writeInt(redisBungee.getCount());
+                        } else {
+
+                            out.writeUTF(type);
+                            try {
+                                out.writeInt(RedisBungee.getApi().getPlayersOnServer(type).size());
+                            } catch (IllegalArgumentException e) {
+                                out.writeInt(0);
+                            }
+                        }
+                        Optional<ServerConnection> server = ((ServerConnection) event.getSource()).getPlayer().getCurrentServer();
+                        if (!server.isPresent()){
+                            throw new IllegalStateException("No server to send data to");
+                        }
+                        server.get().sendPluginMessage(MinecraftChannelIdentifier.from("redisbungee:tospigot"), out.toByteArray());
+                        break;
+                    case "LastOnline":
+                        String user = in.readUTF();
+                        out.writeUTF("LastOnline");
+                        out.writeUTF(user);
+                        out.writeLong(RedisBungee.getApi().getLastOnline(Objects.requireNonNull(redisBungee.getUuidTranslator().getTranslatedUuid(user, true))));
+                        break;
+                    case "ServerPlayers":
+                        String type1 = in.readUTF();
+                        out.writeUTF("ServerPlayers");
+                        Multimap<String, UUID> multimap = RedisBungee.getApi().getServerToPlayers();
+
+                        boolean includesUsers;
+
+                        switch (type1) {
+                            case "COUNT":
+                                includesUsers = false;
+                                break;
+                            case "PLAYERS":
+                                includesUsers = true;
+                                break;
+                            default:
+                                // TODO: Should I raise an error?
+                                return;
+                        }
+
+                        out.writeUTF(type1);
+
+                        if (includesUsers) {
+                            Multimap<String, String> human = HashMultimap.create();
+                            for (Map.Entry<String, UUID> entry : multimap.entries()) {
+                                human.put(entry.getKey(), redisBungee.getUuidTranslator().getNameFromUuid(entry.getValue(), false));
+                            }
+                            serializeMultimap(human, true, out);
+                        } else {
+                            serializeMultiset(multimap.keys(), out);
+                        }
+                        break;
+                    case "Proxy":
+                        out.writeUTF("Proxy");
+                        out.writeUTF(RedisBungee.getConfiguration().getServerId());
+                        break;
+                    case "PlayerProxy":
+                        String username = in.readUTF();
+                        out.writeUTF("PlayerProxy");
+                        out.writeUTF(username);
+                        out.writeUTF(RedisBungee.getApi().getProxy(Objects.requireNonNull(redisBungee.getUuidTranslator().getTranslatedUuid(username, true))));
+                        break;
+                    default:
+                }
+            }).schedule();
+        }
+
+    }
+
+    private void serializeMultiset(Multiset<String> collection, ByteArrayDataOutput output) {
+        output.writeInt(collection.elementSet().size());
+        for (Multiset.Entry<String> entry : collection.entrySet()) {
+            output.writeUTF(entry.getElement());
+            output.writeInt(entry.getCount());
+        }
+    }
+
+    private void serializeMultimap(Multimap<String, String> collection, boolean includeNames, ByteArrayDataOutput output) {
+        output.writeInt(collection.keySet().size());
+        for (Map.Entry<String, Collection<String>> entry : collection.asMap().entrySet()) {
+            output.writeUTF(entry.getKey());
+            if (includeNames) {
+                serializeCollection(entry.getValue(), output);
+            } else {
+                output.writeInt(entry.getValue().size());
+            }
+        }
+    }
+
+    private void serializeCollection(Collection<?> collection, ByteArrayDataOutput output) {
+        output.writeInt(collection.size());
+        for (Object o : collection) {
+            output.writeUTF(o.toString());
+        }
+    }
 }
