@@ -8,7 +8,7 @@ This was made, so we can use proxies with Velocity and others with BungeeCord.
 
 RedisBungee is distributed as a [maven](http://maven.apache.org) project. To compile it and install it in your local Maven repository:
 
-    git clone https://github.com/LatamCraft/RedisBungee.git
+    git clone https://github.com/YoSoyVillaa/RedisBungee.git
     cd RedisBungee
     mvn clean install
 
