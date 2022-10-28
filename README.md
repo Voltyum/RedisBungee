@@ -14,6 +14,6 @@ RedisBungee is distributed as a [maven](http://maven.apache.org) project. To com
 
 ## Configuration
 
-**REDISBUNGEE REQUIRES A REDIS SERVER**, preferably with reasonably low latency. The default [config](https://github.com/LatamCraft/RedisBungee/blob/master/src/main/resources/example_config.yml) is saved when the plugin first starts.
+**REDISBUNGEE REQUIRES A REDIS SERVER**, preferably with reasonably low latency. The default [config](https://github.com/YoSoyVillaa/RedisBungee/blob/master/src/main/resources/config.toml) is saved when the plugin first starts.
 
 If you want to use **RedisBungee PlaceholderAPI placeholders**, you have to use my [RedisBungee-Expansion](https://github.com/YoSoyVillaa/RedisBungee-Expansion)

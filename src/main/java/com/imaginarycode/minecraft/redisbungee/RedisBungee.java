@@ -55,7 +55,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 /**
  * This code has been created by Tux, and modified by gatogamer.
  */
-@Plugin(id = "redisbungee", name = "RedisBungee", version = "1.0-SNAPSHOT", description = "Connecting multiple proxies using Redis", authors = {"Tux", "gatogamer_", "YoSoyVillaa"})
+@Plugin(id = "redisbungee", name = "RedisBungee", version = "1.0.1", description = "Connecting multiple proxies using Redis", authors = {"Tux", "gatogamer_", "YoSoyVillaa"})
 @Getter
 public class RedisBungee {
 
